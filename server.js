@@ -63,52 +63,37 @@ app.use(function (req, res /*, next*/ ) {
     res.redirect('/');
 });
 
-// for test use
-setTimeout(() => {
-    setInterval(() => {
-        try {
-            let date = Date.now();
-            obj = {
-                type: 'humidity',
-                humidity: Math.random() * 100
-            };
-            wss.broadcast(JSON.stringify(Object.assign(obj, {
-                time: moment.utc(date).format('hh:mm:ss')
-            })));
-        } catch (err) {
-            console.log(err);
-        }
-    }, 2000);
-    setInterval(() => {
-        try {
-            let date = Date.now();
-            obj = {
-                type: 'sound',
-                sound: Math.random() * 50
-            };
-            wss.broadcast(JSON.stringify(Object.assign(obj, {
-                time: moment.utc(date).format('hh:mm:ss')
-            })));
-        } catch (err) {
-            console.log(err);
-        }
-    }, 1000);
-}, 5000);
+var iotHubReader = new
+iotHubClient('HostName=uciiot.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=gKduZxe+XZ6s8kyFitsiOUgCLZUEuKEJXd7OzoXQjBA=',
+    'pj');
+iotHubReader.startReadMessage(function (superobj, date) {
+    date = Date.now();
+    try {
+        let date = Date.now();
+        obj = {
+            type: 'humidity',
+            humidity: superobj.humidity
+        };
+        wss.broadcast(JSON.stringify(Object.assign(obj, {
+            time: moment.utc(date).format('hh:mm:ss')
+        })));
+    } catch (err) {
+        console.log(err);
+    }
 
-// var iotHubReader = new
-// iotHubClient(process.env['Azure.IoT.IoTHub.ConnectionString'],
-// process.env['Azure.IoT.IoTHub.ConsumerGroup']);
-// iotHubReader.startReadMessage(function (obj, date) {
-//   try {
-//     console.log(date);
-//     date = date || Date.now()
-//     wss.broadcast(JSON.stringify(Object.assign(obj, { time:
-//     moment.utc(date).format('YYYY:MM:DD[T]hh:mm:ss') })));
-//   } catch (err) {
-//     console.log(obj);
-//     console.error(err);
-//   }
-// });
+    try {
+        let date = Date.now();
+        obj = {
+            type: 'sound',
+            sound: superobj.sound
+        };
+        wss.broadcast(JSON.stringify(Object.assign(obj, {
+            time: moment.utc(date).format('hh:mm:ss')
+        })));
+    } catch (err) {
+        console.log(err);
+    }
+});
 
 var port = normalizePort(process.env.PORT || '3000');
 server.listen(port, function listening() {
