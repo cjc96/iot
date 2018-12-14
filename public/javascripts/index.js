@@ -135,4 +135,8 @@ $(document).ready(function () {
             console.error(err);
         }
     }
+
+    $('button').click(() => {
+        $.get('/updateWeather');
+    });
 });
