@@ -7,6 +7,7 @@ const iotHubClient = require('./IoThub/iot-hub.js');
 const request = require('request');
 const API_KEY = '9efa6376d87af8e87bf4b70b2da2fa29';
 const app = express();
+let remoteIP = '68.96.88.58';
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -46,7 +47,7 @@ let fetchWeather = (iotIP) => {
 }
 
 let updateWeather = () => {
-    fetchWeather('68.96.88.58').then((weather) => {
+    fetchWeather(remoteIP).then((weather) => {
         let cp = {
             type: 'weather',
             humidity: weather.main.humidity,
@@ -85,7 +86,8 @@ app.get('/updateWeather', (req, res) => {
 
 app.get('/updateIP', (req, res) => {
     console.log(req.headers['x-forwarded-for'] || req.connection.remoteAddress);
-    res.end();
+    remoteIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    res.end("Updated IP");
 });
 
 app.use(function (req, res /*, next*/ ) {
